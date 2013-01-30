@@ -31,8 +31,6 @@ if daemon == "-d"
       # Overrides the default logdir/{app_name}.log with logdir/{app_name}.exceptions.log
       # logfile is used for exception handling in Daemons::Application#exception_log
 
-      attr_accessor :options
-
       def logfile
         puts options.map{ |k,v| "#{k} = #{v}"}.join("\n")
         puts "Loading Enhanced Daemons logfile"
@@ -51,8 +49,7 @@ if daemon == "-d"
         if options[:log_file] && logdir
           log_path = File.join(logdir, options[:log_file])
           puts "Using #{ log_path } as log file."
-          puts @options.map{ |k,v| "#{k} = #{v}"}.join("\n")
-          File.open(log_path, "a"){} if File.exists? log_path
+          File.open(log_path, "w"){ |f| f.puts "[#{Time.current}] Creating log file..."} unless File.exists? log_path
           log_path
         elsif options[:log_output] && logdir
           File.join(logdir, @group.app_name + '.output')
@@ -91,7 +88,8 @@ if daemon == "-d"
       @options[:log_dir] = log_dir
     end
     opts.on('-lf', '--log-file FILE', 'Specifies an alternate name for the log file.') do | log_file |
-      @options[:log_file] = log_file
+      @options[:log_output] = true
+      @options[:log_file]   = log_file
     end
     opts.on('-m', '--monitor', 'Start monitor process.') do
       @monitor = true
