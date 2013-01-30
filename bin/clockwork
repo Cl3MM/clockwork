@@ -2,8 +2,7 @@
 
 STDERR.sync = STDOUT.sync = true
 
-#require File.expand_path('../../lib/clockwork', __FILE__)
-require File.expand_path('../lib/clockwork', __FILE__)
+require File.expand_path('../../lib/clockwork', __FILE__)
 
 usage = "clockwork <clock.rb>"
 file = ARGV.shift or abort usage
