@@ -49,7 +49,7 @@ if daemon == "-d"
         puts options.map{ |k,v| "#{k} = #{v}"}.join("\n")
         puts "Loading Enhanced Daemons output_logfile"
         if options[:log_file] && logdir
-          puts "Using #{options[:log_file]} as log file."
+          puts "Using #{ File.join(logdir, options[:log_file]) } as log file."
           @options[:log_output] = true
           File.join(logdir, options[:log_file])
         elsif options[:log_output] && logdir
