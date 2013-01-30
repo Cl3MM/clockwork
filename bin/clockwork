@@ -49,9 +49,11 @@ if daemon == "-d"
         puts options.map{ |k,v| "#{k} = #{v}"}.join("\n")
         puts "Loading Enhanced Daemons output_logfile"
         if options[:log_file] && logdir
-          puts "Using #{ File.join(logdir, options[:log_file]) } as log file."
-          @options[:log_output] = true
-          File.join(logdir, options[:log_file])
+          log_path = File.join(logdir, options[:log_file])
+          puts "Using #{ log_path } as log file."
+          puts @options.map{ |k,v| "#{k} = #{v}"}.join("\n")
+          File.open(log_path, "a"){} if File.exists? log_path
+          log_path
         elsif options[:log_output] && logdir
           File.join(logdir, @group.app_name + '.output')
         else
