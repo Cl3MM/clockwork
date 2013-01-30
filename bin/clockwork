@@ -21,7 +21,7 @@ deamon = ARGV.shift
 if deamon == "-d"
   begin
     require 'daemons'
-    require File.expand_path('../lib/daemons', __FILE__)
+    require File.expand_path('../../lib/daemons', __FILE__)
   rescue LoadError
     raise "You need to add gem 'daemons' to your Gemfile or Rubygems if you wish to use it."
   end
