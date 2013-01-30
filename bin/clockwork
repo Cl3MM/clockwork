@@ -30,6 +30,9 @@ if daemon == "-d"
     class Application
       # Overrides the default logdir/{app_name}.log with logdir/{app_name}.exceptions.log
       # logfile is used for exception handling in Daemons::Application#exception_log
+
+      attr_accessor :options
+
       def logfile
         puts options.map{ |k,v| "#{k} = #{v}"}.join("\n")
         puts "Loading Enhanced Daemons logfile"
@@ -46,7 +49,8 @@ if daemon == "-d"
         puts options.map{ |k,v| "#{k} = #{v}"}.join("\n")
         puts "Loading Enhanced Daemons output_logfile"
         if options[:log_file] && logdir
-          options[:log_output] = true
+          puts "Using #{options[:log_file]} as log file."
+          @options[:log_output] = true
           File.join(logdir, options[:log_file])
         elsif options[:log_output] && logdir
           File.join(logdir, @group.app_name + '.output')
