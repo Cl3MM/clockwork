@@ -34,8 +34,10 @@ if deamon == "-d"
         puts "Loading Enhanced Daemons logfile"
         if logdir && options[:log_file]
           File.join(logdir, @group.app_name + 'exception.log')
+        elsif logdir
+          File.join(logdir, @group.app_name + '.log')
         else
-          super
+          nil
         end
       end
 
@@ -43,8 +45,10 @@ if deamon == "-d"
         puts "Loading Enhanced Daemons output_logfile"
         if options[:log_output] && options[:log_file] && logdir
           File.join(logdir, options[:log_file])
+        elsif options[:log_output] && logdir
+          File.join(logdir, @group.app_name + '.output')
         else
-          super
+          nil
         end
       end
     end
