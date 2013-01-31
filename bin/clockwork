@@ -31,17 +31,17 @@ if daemon == "-d"
       # Overrides the default logdir/{app_name}.log with logdir/{app_name}.exceptions.log
       # logfile is used for exception handling in Daemons::Application#exception_log
 
-      def logfile
-        puts options.map{ |k,v| "#{k} = #{v}"}.join("\n")
-        puts "Loading Enhanced Daemons logfile"
-        if logdir && options[:log_file]
-          File.join(logdir, @group.app_name + 'exception.log')
-        elsif logdir
-          File.join(logdir, @group.app_name + '.log')
-        else
-          nil
-        end
-      end
+      #def logfile
+        #puts options.map{ |k,v| "#{k} = #{v}"}.join("\n")
+        #puts "Loading Enhanced Daemons logfile"
+        #if logdir && options[:log_file]
+          #File.join(logdir, @group.app_name + 'exception.log')
+        #elsif logdir
+          #File.join(logdir, @group.app_name + '.log')
+        #else
+          #nil
+        #end
+      #end
 
       def output_logfile
         puts options.map{ |k,v| "#{k} = #{v}"}.join("\n")
@@ -60,65 +60,65 @@ if daemon == "-d"
     end
   end
 
-  module Daemonize
-    def call_as_daemon(block, logfile_name = nil, app_name = nil)
-      puts "Yeah, calling my Uber function!!!"
-      rd, wr = IO.pipe
+  #module Daemonize
+    #def call_as_daemon(block, logfile_name = nil, app_name = nil)
+      #puts "Yeah, calling my Uber function!!!"
+      #rd, wr = IO.pipe
 
-      if tmppid = safefork
-        # parent
-        wr.close
-        pid = rd.read.to_i
-        rd.close
+      #if tmppid = safefork
+        ## parent
+        #wr.close
+        #pid = rd.read.to_i
+        #rd.close
 
-        Process.waitpid(tmppid)
+        #Process.waitpid(tmppid)
 
-        return pid
-      else
-        # child
+        #return pid
+      #else
+        ## child
 
-        rd.close
+        #rd.close
 
-        # Detach from the controlling terminal
-        unless sess_id = Process.setsid
-          raise Daemons.RuntimeException.new('cannot detach from controlling terminal')
-        end
-
-        # Prevent the possibility of acquiring a controlling terminal
-        #if oldmode.zero?
-        trap 'SIGHUP', 'IGNORE'
-        exit if pid = safefork
+        ## Detach from the controlling terminal
+        #unless sess_id = Process.setsid
+          #raise Daemons.RuntimeException.new('cannot detach from controlling terminal')
         #end
 
-        wr.write Process.pid
-        wr.close
+        ## Prevent the possibility of acquiring a controlling terminal
+        ##if oldmode.zero?
+        #trap 'SIGHUP', 'IGNORE'
+        #exit if pid = safefork
+        ##end
 
-        $0 = app_name if app_name
+        #wr.write Process.pid
+        #wr.close
 
-        Dir.chdir "/"   # Release old working directory
-        File.umask 0000 # Insure sensible umask
+        #$0 = app_name if app_name
 
-        # Make sure all file descriptors are closed
-        #ObjectSpace.each_object(IO) do |io|
-          #unless [STDIN, STDOUT, STDERR].include?(io)
-            #begin
-              #unless io.closed?
-                #io.close
-              #end
-            #rescue ::Exception
-            #end
-          #end
-        #end
+        #Dir.chdir "/"   # Release old working directory
+        #File.umask 0000 # Insure sensible umask
 
-        redirect_io(logfile_name)  
+        ## Make sure all file descriptors are closed
+        ##ObjectSpace.each_object(IO) do |io|
+          ##unless [STDIN, STDOUT, STDERR].include?(io)
+            ##begin
+              ##unless io.closed?
+                ##io.close
+              ##end
+            ##rescue ::Exception
+            ##end
+          ##end
+        ##end
 
-        block.call
+        #redirect_io(logfile_name)
 
-        exit
-      end
-    end
-    module_function :call_as_daemon
-  end
+        #block.call
+
+        #exit
+      #end
+    #end
+    #module_function :call_as_daemon
+  #end
 
 
   require 'tmpdir'
