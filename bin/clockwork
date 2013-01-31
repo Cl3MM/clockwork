@@ -49,7 +49,7 @@ if daemon == "-d"
         if options[:log_file] && logdir
           log_path = File.join(logdir, options[:log_file])
           puts "Using #{ log_path } as log file."
-          File.open(log_path, "w"){ |f| f.puts "[#{Time.current}] Creating log file..."} unless File.exists? log_path
+          #File.open(log_path, "w"){ |f| f.puts "[#{Time.current}] Creating log file..."} unless File.exists? log_path
           log_path
         elsif options[:log_output] && logdir
           File.join(logdir, @group.app_name + '.output')
@@ -59,6 +59,67 @@ if daemon == "-d"
       end
     end
   end
+
+  module Daemonize
+    def call_as_daemon(block, logfile_name = nil, app_name = nil)
+      puts "Yeah, calling my Uber function!!!"
+      rd, wr = IO.pipe
+
+      if tmppid = safefork
+        # parent
+        wr.close
+        pid = rd.read.to_i
+        rd.close
+
+        Process.waitpid(tmppid)
+
+        return pid
+      else
+        # child
+
+        rd.close
+
+        # Detach from the controlling terminal
+        unless sess_id = Process.setsid
+          raise Daemons.RuntimeException.new('cannot detach from controlling terminal')
+        end
+
+        # Prevent the possibility of acquiring a controlling terminal
+        #if oldmode.zero?
+        trap 'SIGHUP', 'IGNORE'
+        exit if pid = safefork
+        #end
+
+        wr.write Process.pid
+        wr.close
+
+        $0 = app_name if app_name
+
+        Dir.chdir "/"   # Release old working directory
+        File.umask 0000 # Insure sensible umask
+
+        # Make sure all file descriptors are closed
+        #ObjectSpace.each_object(IO) do |io|
+          #unless [STDIN, STDOUT, STDERR].include?(io)
+            #begin
+              #unless io.closed?
+                #io.close
+              #end
+            #rescue ::Exception
+            #end
+          #end
+        #end
+
+        redirect_io(logfile_name)  
+
+        block.call
+
+        exit
+      end
+    end
+    module_function :call_as_daemon
+  end
+
 
   require 'tmpdir'
   require 'optparse'
