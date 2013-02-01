@@ -40,17 +40,17 @@ if daemon == "-d"
       puts opts
       exit 1
     end
-    opts.on("--pid-dir=DIR', 'Specifies an alternate directory in which to store the process ids.") do |dir|
+    opts.on("-p", "--pid-dir DIR", 'Specifies an alternate directory in which to store the process ids.') do |dir|
       @options[:pid_dir] = dir
     end
-    opts.on('-i', '--identifier=str', 'An identifier for the process.') do |n|
+    opts.on('-i', '--identifier STR', 'An identifier for the process.') do |n|
       @options[:identifier] = n
     end
     opts.on('-l', '--log', 'Redirect both STDOUT and STDERR to a logfile named [app_name].output in the pid-file directory') do
       @options[:log_output] = true
     end
-    opts.on('--log-dir', 'A specific directory to put the log files into (default location is pid directory)') do | log_dir|
-      @options[:log_dir] = log_dir
+    opts.on('--log-dir FILE', 'A specific directory to put the log files into (default location is pid directory)') do | log_dir|
+      @options[:log_dir] = ( log_dir =~ /^\// ? File.join(Dir.pwd, log_dir) : log_dir ) # relative path ? return absolute path
     end
     opts.on('-m', '--monitor', 'Start monitor process.') do
       @monitor = true
