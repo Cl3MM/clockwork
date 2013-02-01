@@ -16,9 +16,9 @@ trap('INT') do
   exit
 end
 
-deamon = ARGV.shift
+daemon = ARGV.shift
 
-if deamon == "-d"
+if daemon == "-d"
   begin
     require 'daemons'
   rescue LoadError
