@@ -28,20 +28,6 @@ if daemon == "-d"
 
   module Daemons
     class Application
-      # Overrides the default logdir/{app_name}.log with logdir/{app_name}.exceptions.log
-      # logfile is used for exception handling in Daemons::Application#exception_log
-
-      #def logfile
-        #puts options.map{ |k,v| "#{k} = #{v}"}.join("\n")
-        #puts "Loading Enhanced Daemons logfile"
-        #if logdir && options[:log_file]
-          #File.join(logdir, @group.app_name + 'exception.log')
-        #elsif logdir
-          #File.join(logdir, @group.app_name + '.log')
-        #else
-          #nil
-        #end
-      #end
 
       def output_logfile
         puts options.map{ |k,v| "#{k} = #{v}"}.join("\n")
@@ -59,67 +45,6 @@ if daemon == "-d"
       end
     end
   end
-
-  #module Daemonize
-    #def call_as_daemon(block, logfile_name = nil, app_name = nil)
-      #puts "Yeah, calling my Uber function!!!"
-      #rd, wr = IO.pipe
-
-      #if tmppid = safefork
-        ## parent
-        #wr.close
-        #pid = rd.read.to_i
-        #rd.close
-
-        #Process.waitpid(tmppid)
-
-        #return pid
-      #else
-        ## child
-
-        #rd.close
-
-        ## Detach from the controlling terminal
-        #unless sess_id = Process.setsid
-          #raise Daemons.RuntimeException.new('cannot detach from controlling terminal')
-        #end
-
-        ## Prevent the possibility of acquiring a controlling terminal
-        ##if oldmode.zero?
-        #trap 'SIGHUP', 'IGNORE'
-        #exit if pid = safefork
-        ##end
-
-        #wr.write Process.pid
-        #wr.close
-
-        #$0 = app_name if app_name
-
-        #Dir.chdir "/"   # Release old working directory
-        #File.umask 0000 # Insure sensible umask
-
-        ## Make sure all file descriptors are closed
-        ##ObjectSpace.each_object(IO) do |io|
-          ##unless [STDIN, STDOUT, STDERR].include?(io)
-            ##begin
-              ##unless io.closed?
-                ##io.close
-              ##end
-            ##rescue ::Exception
-            ##end
-          ##end
-        ##end
-
-        #redirect_io(logfile_name)
-
-        #block.call
-
-        #exit
-      #end
-    #end
-    #module_function :call_as_daemon
-  #end
-
 
   require 'tmpdir'
   require 'optparse'
@@ -139,7 +64,7 @@ if daemon == "-d"
     opts.on('-pd', '--pid-dir DIR', 'Specifies an alternate directory in which to store the process ids.') do |dir|
       @options[:pid_dir] = dir
     end
-    opts.on('-i', '--identifier=str', 'An identifier for the process.') do |n|
+    opts.on('-i', '--identifier STR', 'An identifier for the process.') do |n|
       @options[:identifier] = n
     end
     opts.on('-l', '--log', 'Redirect both STDOUT and STDERR to a logfile named [app_name].output in the pid-file directory') do
